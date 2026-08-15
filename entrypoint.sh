@@ -20,10 +20,10 @@ if [ -z "$DB_DSN" ] && [ -n "$DB_HOST" ] && [ -n "$DB_USERNAME" ]; then
 fi
 
 echo "==> Running migrations..."
-./main artisan migrate
+./main artisan migrate || true
 
 echo "==> Running seeders..."
-./main artisan db:seed || true
+./main artisan db:seed || echo "WARNING: Seeder failed (tables may already have data)"
 
 echo "==> Starting Goravel server on ${APP_HOST:-0.0.0.0}:${APP_PORT:-3000}..."
 exec ./main
