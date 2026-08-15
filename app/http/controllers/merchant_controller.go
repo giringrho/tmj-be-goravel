@@ -23,6 +23,17 @@ func NewMerchantController() *MerchantController {
 // synchronously, and returns the aggregated result as JSON.
 //
 // POST /merchants/process  (multipart form field "files")
+//
+// @Summary      Process CSV files (synchronous)
+// @Description  Upload one or more CSV files of merchant data. Files are read concurrently with a worker pool, rows are parsed, and created_at is aggregated into a per-day time series. Returns the total report and time series in a single JSON response.
+// @Tags         CSV Processor
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        files  formData  file    true  "CSV files (field name: files, multiple allowed)"
+// @Success      200    {object}  map[string]any  "{report: {FilesTotal, FilesRead, RowsRead, FailedFiles}, series: [{Date, Count}]}"
+// @Failure      400    {object}  map[string]any  "{\"error\": \"no files uploaded\"}"
+// @Failure      422    {object}  map[string]any  "{\"error\": \"parse error\", \"report\": {...}}"
+// @Router       /api/merchants/process [post]
 func (r *MerchantController) Process(ctx http.Context) http.Response {
 	files, err := ctx.Request().Files("files")
 	if err != nil {
@@ -65,6 +76,16 @@ func (r *MerchantController) Process(ctx http.Context) http.Response {
 //
 // POST /merchants/process/stream  (multipart form field "files")
 // Response Content-Type: text/event-stream
+//
+// @Summary      Process CSV files (streaming via SSE)
+// @Description  Upload one or more CSV files. Progress events are streamed back in real-time via Server-Sent Events (event: progress), followed by a final result event (event: result) containing the aggregated report and time series.
+// @Tags         CSV Processor
+// @Accept       multipart/form-data
+// @Produce      text/event-stream
+// @Param        files  formData  file    true  "CSV files (field name: files, multiple allowed)"
+// @Success      200    {string}  string  "SSE stream: event: progress {FilesTotal, FilesRead, RowsRead, RowsProcessed, Done} → event: result {report, series}"
+// @Failure      400    {object}  map[string]any  "{\"error\": \"no files uploaded\"}"
+// @Router       /api/merchants/process/stream [post]
 func (r *MerchantController) ProcessStream(ctx http.Context) http.Response {
 	files, err := ctx.Request().Files("files")
 	if err != nil {

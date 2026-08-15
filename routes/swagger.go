@@ -16,7 +16,7 @@ const swaggerUIHTML = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Tesmajoo Blog API (Goravel) — Swagger UI</title>
+    <title>Tesmajoo API (Goravel) — Swagger UI</title>
     <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
     <style>
       body { margin: 0; }

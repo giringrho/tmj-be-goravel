@@ -85,11 +85,11 @@ definitions:
       error:
         $ref: '#/definitions/responses.ErrorBody'
     type: object
-host: localhost:3000
+host: ""
 info:
   contact: {}
-  description: REST API for a Blog with JWT auth and RBAC (Soal 2 — Go).
-  title: Tesmajoo Blog API (Goravel)
+  description: REST API for CSV Processing (Soal 1) and Blog with JWT auth and RBAC (Soal 2 — Go).
+  title: Tesmajoo API (Goravel)
   version: "1.0"
 paths:
   /api/auth/login:
@@ -722,6 +722,94 @@ paths:
       summary: Change user role
       tags:
       - Users
+  /api/merchants/process:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload one or more CSV files of merchant data. Files are read concurrently with a worker pool, rows are parsed, and created_at is aggregated into a per-day time series. Returns the total report and time series in a single JSON response.
+      parameters:
+      - description: CSV files (field name: files, multiple allowed)
+        in: formData
+        name: files
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              report:
+                properties:
+                  FailedFiles:
+                    items:
+                      type: string
+                    type: array
+                  FilesRead:
+                    type: integer
+                  FilesTotal:
+                    type: integer
+                  RowsRead:
+                    type: integer
+                type: object
+              series:
+                items:
+                  properties:
+                    Count:
+                      type: integer
+                    Date:
+                      type: string
+                  type: object
+                type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            properties:
+              error:
+                type: string
+              report:
+                type: object
+            type: object
+      summary: Process CSV files (synchronous)
+      tags:
+      - CSV Processor
+  /api/merchants/process/stream:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload one or more CSV files. Progress events are streamed back in real-time via Server-Sent Events (event: progress), followed by a final result event (event: result) containing the aggregated report and time series.
+      parameters:
+      - description: CSV files (field name: files, multiple allowed)
+        in: formData
+        name: files
+        required: true
+        type: file
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE stream
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Process CSV files (streaming via SSE)
+      tags:
+      - CSV Processor
 securityDefinitions:
   BearerAuth:
     description: Enter JWT token with the `Bearer` prefix, e.g. "Bearer eyJhbGciOi..."

@@ -988,6 +988,119 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/merchants/process": {
+            "post": {
+                "description": "Upload one or more CSV files of merchant data. Files are read concurrently with a worker pool, rows are parsed, and created_at is aggregated into a per-day time series. Returns the total report and time series in a single JSON response.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CSV Processor"
+                ],
+                "summary": "Process CSV files (synchronous)",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "CSV files (field name: files, multiple allowed)",
+                        "name": "files",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "report": {
+                                    "type": "object",
+                                    "properties": {
+                                        "FilesTotal": { "type": "integer" },
+                                        "FilesRead": { "type": "integer" },
+                                        "RowsRead": { "type": "integer" },
+                                        "FailedFiles": { "type": "array", "items": { "type": "string" } }
+                                    }
+                                },
+                                "series": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Date": { "type": "string" },
+                                            "Count": { "type": "integer" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": { "type": "string" }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": { "type": "string" },
+                                "report": { "type": "object" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/merchants/process/stream": {
+            "post": {
+                "description": "Upload one or more CSV files. Progress events are streamed back in real-time via Server-Sent Events (event: progress), followed by a final result event (event: result) containing the aggregated report and time series.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "CSV Processor"
+                ],
+                "summary": "Process CSV files (streaming via SSE)",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "CSV files (field name: files, multiple allowed)",
+                        "name": "files",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "SSE stream: event: progress {FilesTotal, FilesRead, RowsRead, RowsProcessed, Done} then event: result {report, series}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": { "type": "string" }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1133,11 +1246,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
+	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Tesmajoo Blog API (Goravel)",
-	Description:      "REST API for a Blog with JWT auth and RBAC (Soal 2 — Go).",
+	Title:            "Tesmajoo API (Goravel)",
+	Description:      "REST API for CSV Processing (Soal 1) and Blog with JWT auth and RBAC (Soal 2 — Go).",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
