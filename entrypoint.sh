@@ -15,7 +15,7 @@ fi
 # Build DSN from individual DB_* env vars if DB_DSN is not already set.
 # Aiven MySQL requires SSL, so we append tls=true to the DSN.
 if [ -z "$DB_DSN" ] && [ -n "$DB_HOST" ] && [ -n "$DB_USERNAME" ]; then
-  export DB_DSN="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT:-3306})/${DB_DATABASE}?charset=utf8mb4&parseTime=true&loc=UTC&tls=true"
+  export DB_DSN="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT:-3306})/${DB_DATABASE}?charset=utf8mb4&parseTime=true&loc=UTC&tls=aiven"
   export DB_CONNECTION=mysql
 fi
 
