@@ -1,0 +1,4 @@
+id,user_id,merchant_name,created_at,created_by,updated_at,updated_by
+100,1,Toko Broken,2026-08-10 12:00:00,1
+101,2,Toko OK,2026-08-10 12:00:00,2,2026-08-10 12:00:00,2
+102,3,Toko Broken Lagi,2026-08-11

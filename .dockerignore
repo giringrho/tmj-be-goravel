@@ -1,0 +1,6 @@
+.git
+.gitignore
+storage/logs
+*.log
+.env
+.env.backup
