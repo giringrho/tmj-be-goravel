@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "",
+    "host": "tmj-be-goravel.onrender.com",
     "basePath": "/",
     "paths": {
         "/api/auth/login": {

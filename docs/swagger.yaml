@@ -85,7 +85,7 @@ definitions:
       error:
         $ref: '#/definitions/responses.ErrorBody'
     type: object
-host: ""
+host: tmj-be-goravel.onrender.com
 info:
   contact: {}
   description: REST API for CSV Processing (Soal 1) and Blog with JWT auth and RBAC (Soal 2 — Go).
