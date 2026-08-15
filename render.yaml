@@ -1,0 +1,31 @@
+# Render Blueprint — Goravel Backend (Soal 1 & 2)
+# Deploy via: render.com → New → Blueprint → connect GitHub repo
+services:
+  - type: web
+    name: tmj-be-goravel
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_HOST
+        value: 0.0.0.0
+      - key: JWT_SECRET
+        sync: false  # Set manually in Render dashboard (random 32+ char string)
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        value: tmj-db-tmj-db.c.aivencloud.com
+      - key: DB_PORT
+        value: "17039"
+      - key: DB_DATABASE
+        value: defaultdb
+      - key: DB_USERNAME
+        value: avnadmin
+      - key: DB_PASSWORD
+        sync: false  # Set manually in Render dashboard (Aiven password)

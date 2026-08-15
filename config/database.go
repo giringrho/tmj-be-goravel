@@ -39,6 +39,9 @@ func init() {
 				"collation": "utf8mb4_unicode_ci",
 				"prefix":    "",
 				"singular":  false,
+				// If DB_DSN is set (e.g. for Aiven MySQL with SSL), it takes
+				// precedence over the individual host/port/user/pass fields.
+				"dsn": config.Env("DB_DSN", ""),
 				"via": func() (driver.Driver, error) {
 					return mysqlfacades.Mysql("mysql")
 				},

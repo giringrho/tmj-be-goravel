@@ -24,6 +24,7 @@ COPY --from=builder /build/docs/ /www/docs/
 
 RUN chmod +x /www/entrypoint.sh
 
+# Render sets PORT; Goravel reads APP_PORT. Entrypoint maps PORT→APP_PORT.
 EXPOSE 3000
 
 ENTRYPOINT ["/www/entrypoint.sh"]
